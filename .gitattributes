@@ -1,0 +1,5 @@
+# Auto detect text files and perform LF normalization
+* text=auto
+*libwebrtc-audio.a filter=lfs diff=lfs merge=lfs -text
+*Scene_C_specular.psd filter=lfs diff=lfs merge=lfs -text
+*.fbx filter=lfs diff=lfs merge=lfs -text
