@@ -1,19 +1,29 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
-public class ObstacleSpawner : MonoBehaviour
+public class GameManager : MonoBehaviour
 {
-    public GameObject obstaclePrefab;
+    [Header("---------- LEVEL VALUES ----------")]
+
     public int numberOfObstacles;
     public float spawnY;
     public float startX;
     public float endX;
+    public List<Vector3> obstaclePositions = new List<Vector3>();
+    public float platformYPos;
+    public float maxObstacleYPos;
 
+    [Header("---------- GAME OBJECTS ----------")]
+
+    public GameObject obstaclePrefab;
     public GameObject character;
 
+    //LISTS//
     private List<GameObject> spawnedObstacles = new List<GameObject>();
-    public List<Vector3> obstaclePositions = new List<Vector3>();
+    private List<Transform> spawnedObstaclesPos = new List<Transform>();
+    private List<float> posDifferenceList = new List<float>();
 
     private bool hasJumped = false;
 
@@ -21,19 +31,29 @@ public class ObstacleSpawner : MonoBehaviour
     private bool isObstacleFalling = false;
     private bool isLevelOver = false;
 
-    // Character properties
+    [Header("---------- CHARACTER PROPERTIES ----------")]
+
     public Transform characterTransform;
     public float jumpForce = 5f;
     public float jumpThreshold = 0.1f; // Minimum distance to consider the jump complete
 
+    [Header("---------- ENERGY ----------")]
+
+    public float maxEnergy = 100f;
+    private float currentEnergy;
+    public Image energyProgress;
+
     private void Start()
     {
         CalculateSpacingAndSpawnObstacles();
+        currentEnergy = maxEnergy;
     }
 
     private void Update()
     {
         GameObject fallingObstacle = spawnedObstacles[obstacleCount];
+
+        energyProgress.fillAmount = currentEnergy / maxEnergy;
 
         if (Input.GetMouseButtonDown(0))
         {
@@ -46,16 +66,39 @@ public class ObstacleSpawner : MonoBehaviour
                 }
                 else if (isObstacleFalling)
                 {
-                    fallingObstacle.GetComponent<Rigidbody2D>().isKinematic = true;
-                    fallingObstacle.GetComponent<Rigidbody2D>().velocity = Vector3.zero;
-                    isObstacleFalling = false;
-                    obstacleCount++;
-
-                    if (obstacleCount == numberOfObstacles)
+                    if (spawnedObstaclesPos[obstacleCount].position.y > maxObstacleYPos)
                     {
-                        obstacleCount = 0;
+                        if (obstacleCount == 0)
+                        {
+                            float firstYPos = Mathf.Abs(platformYPos + 0.71f - spawnedObstaclesPos[obstacleCount].position.y);
+                            posDifferenceList.Add(firstYPos);
+                            Debug.Log("ilk pos eklendi : " + firstYPos);
+                        }
+
+                        else
+                        {
+                            float YPos = Mathf.Abs(spawnedObstaclesPos[obstacleCount - 1].position.y - spawnedObstaclesPos[obstacleCount].position.y);
+                            posDifferenceList.Add(YPos);
+                            Debug.Log("pos eklendi : " + YPos);
+                        }
+
+                        fallingObstacle.GetComponent<Rigidbody2D>().isKinematic = true;
+                        fallingObstacle.GetComponent<Rigidbody2D>().velocity = Vector3.zero;
+                        isObstacleFalling = false;
+                        spawnedObstaclesPos[obstacleCount] = spawnedObstacles[obstacleCount].transform;
+                        obstacleCount++;
+
+                        if (obstacleCount == numberOfObstacles)
+                        {
+                            obstacleCount = 0;
+                            isLevelOver = true;
+                            StartMoving();
+                        }
+                    }
+
+                    else
+                    {
                         isLevelOver = true;
-                        StartMoving();
                     }
                 }
             }
@@ -75,7 +118,10 @@ public class ObstacleSpawner : MonoBehaviour
 
             GameObject obstacle = Instantiate(obstaclePrefab, spawnPosition, Quaternion.identity);
             obstaclePositions.Add(spawnPosition);
-            spawnedObstacles.Add(obstacle); // Add spawned obstacle to the list
+            spawnedObstacles.Add(obstacle);
+
+            // spawnedObstaclesPos listesine yeni bir Transform ekle
+            spawnedObstaclesPos.Add(obstacle.transform);
 
             currentX += spacingX;
         }
@@ -95,6 +141,8 @@ public class ObstacleSpawner : MonoBehaviour
             Vector3 targetPosition = obstaclePositions[i];
             Vector3 initialPosition = characterTransform.position;
 
+            currentEnergy -= posDifferenceList[i] * 30f;
+
             float jumpDistance = Vector2.Distance(initialPosition, targetPosition);
             float normalizedJumpForce = jumpForce * Mathf.Clamp01(1f / jumpDistance);
 
@@ -112,6 +160,12 @@ public class ObstacleSpawner : MonoBehaviour
 
             // Wait for 1 second
             yield return new WaitForSeconds(1f);
+
+            if (currentEnergy < 0f)
+            {
+                isLevelOver = true;
+                Debug.Log("bitti");
+            }
         }
 
         // All obstacles reached

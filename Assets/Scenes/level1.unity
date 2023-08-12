@@ -232,7 +232,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 4
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &519420028
 GameObject:
@@ -475,7 +475,7 @@ GameObject:
   - component: {fileID: 855659467}
   - component: {fileID: 855659468}
   m_Layer: 0
-  m_Name: obstacleSpawner
+  m_Name: GAMEMANAGER
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -489,12 +489,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 855659466}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.7905277, y: 1.0030959, z: -0.049567565}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 5
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &855659468
 MonoBehaviour:
@@ -508,16 +508,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 82ccadd25614b734ea4a3e21cf6e6ed8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  obstaclePrefab: {fileID: 9103072454440905164, guid: 87c8b58ba9bfeac4d81620e8fb289ab3, type: 3}
   numberOfObstacles: 5
   spawnY: 4
   startX: -6
   endX: 6
-  character: {fileID: 1028618753}
   obstaclePositions: []
+  platformYPos: -3.13
+  maxObstacleYPos: -6.5
+  obstaclePrefab: {fileID: 9103072454440905164, guid: 87c8b58ba9bfeac4d81620e8fb289ab3, type: 3}
+  character: {fileID: 1028618753}
   characterTransform: {fileID: 1028618755}
   jumpForce: 20
   jumpThreshold: 0.8
+  maxEnergy: 100
+  energyProgress: {fileID: 1637049517}
 --- !u!1 &859202923
 GameObject:
   m_ObjectHideFlags: 0
@@ -678,7 +682,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 2
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!61 &1028618756
 BoxCollider2D:
@@ -810,7 +814,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 3
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!61 &1443058519
 BoxCollider2D:
@@ -932,7 +936,7 @@ RectTransform:
   m_Children:
   - {fileID: 1637049516}
   m_Father: {fileID: 0}
-  m_RootOrder: 6
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
