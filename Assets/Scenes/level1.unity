@@ -518,8 +518,10 @@ MonoBehaviour:
   obstaclePrefab: {fileID: 9103072454440905164, guid: 87c8b58ba9bfeac4d81620e8fb289ab3, type: 3}
   character: {fileID: 1028618753}
   characterTransform: {fileID: 1028618755}
-  jumpForce: 20
-  jumpThreshold: 0.8
+  jumpForce: 1
+  jumpThreshold: 0.1
+  idleSprite: {fileID: 21300000, guid: 9cd9d00a8cba67d418342c060ff8290f, type: 3}
+  jumpSprite: {fileID: 21300000, guid: 651fa18bc08e87144957038a3c2a18bd, type: 3}
   maxEnergy: 100
   energyProgress: {fileID: 1637049517}
 --- !u!1 &859202923

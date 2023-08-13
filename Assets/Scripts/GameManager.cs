@@ -36,6 +36,9 @@ public class GameManager : MonoBehaviour
     public Transform characterTransform;
     public float jumpForce = 5f;
     public float jumpThreshold = 0.1f; // Minimum distance to consider the jump complete
+    public Sprite idleSprite;
+    public Sprite jumpSprite;
+
 
     [Header("---------- ENERGY ----------")]
 
@@ -51,6 +54,7 @@ public class GameManager : MonoBehaviour
 
     private void Update()
     {
+        Debug.Log("obstacle pos:" + obstaclePositions[0]);
         GameObject fallingObstacle = spawnedObstacles[obstacleCount];
 
         energyProgress.fillAmount = currentEnergy / maxEnergy;
@@ -136,39 +140,53 @@ public class GameManager : MonoBehaviour
     {
         Rigidbody2D characterRigidbody = characterTransform.GetComponent<Rigidbody2D>();
 
-        for (int i = 0; i < obstaclePositions.Count; i++)
+        for (int i = 0; i < spawnedObstacles.Count; i++)
         {
-            Vector3 targetPosition = obstaclePositions[i];
-            Vector3 initialPosition = characterTransform.position;
+            Vector3 start = characterTransform.position;
+            Vector3 target = spawnedObstacles[i].transform.position;
+            target.y += 2f; 
 
-            currentEnergy -= posDifferenceList[i] * 30f;
+            float duration = 1f;  // Zıplama hareketinin süresi
+            float elapsedTime = 0f;
+            float height = 2f; // Zıplama hareketinin maksimum yüksekliği
 
-            float jumpDistance = Vector2.Distance(initialPosition, targetPosition);
-            float normalizedJumpForce = jumpForce * Mathf.Clamp01(1f / jumpDistance);
+            currentEnergy -= posDifferenceList[i] * 30f; // Enerji hesaplaması
 
-            Vector3 moveDirection = (targetPosition - initialPosition).normalized;
-
-            while (Vector2.Distance(characterTransform.position, targetPosition) > jumpThreshold)
+            // Enerji bitip bitmediğini kontrol etme
+            if (currentEnergy <= 0f)
             {
-                characterRigidbody.velocity = moveDirection * normalizedJumpForce;
+                Debug.Log("Enerji bitti!");
+                isLevelOver = true;
+                yield break; // Coroutine'i durdurma
+            }
 
+            SetCharacterSprite(jumpSprite); // Zıplama sprite'ını ayarla
+
+            while (elapsedTime < duration)
+            {
+                float t = elapsedTime / duration;  // Normalleştirilmiş süre
+                float yOffset = height * Mathf.Sin(t * Mathf.PI);
+
+                characterTransform.position = Vector3.Lerp(start, target, t) + new Vector3(0f, yOffset, 0f);
+                
+                elapsedTime += Time.deltaTime;
                 yield return null;
             }
 
-            // Stop character's movement
-            characterRigidbody.velocity = Vector2.zero;
+            characterTransform.position = target;
 
-            // Wait for 1 second
+            SetCharacterSprite(idleSprite); // Standart sprite'a geri dön
+
             yield return new WaitForSeconds(1f);
-
-            if (currentEnergy < 0f)
-            {
-                isLevelOver = true;
-                Debug.Log("bitti");
-            }
         }
 
-        // All obstacles reached
         hasJumped = true;
     }
+
+    private void SetCharacterSprite(Sprite sprite)
+    {
+        characterTransform.GetComponent<SpriteRenderer>().sprite = sprite;
+    }
+
+
 }
