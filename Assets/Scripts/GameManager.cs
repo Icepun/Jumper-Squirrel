@@ -14,6 +14,7 @@ public class GameManager : MonoBehaviour
     public List<Vector3> obstaclePositions = new List<Vector3>();
     public float platformYPos;
     public float maxObstacleYPos;
+    public float objectGravityMultiplier;
 
     [Header("---------- GAME OBJECTS ----------")]
 
@@ -110,29 +111,58 @@ public class GameManager : MonoBehaviour
     }
 
     void CalculateSpacingAndSpawnObstacles()
+{
+    float totalWidth = endX - startX;
+    float spacingX = totalWidth / (numberOfObstacles - 1);
+
+    float defaultObstacleWidth = 2;  // Varsayılan obje genişliği
+    float totalObstaclesWidth = numberOfObstacles * defaultObstacleWidth;
+    
+    // Eksik veya fazla olan alanı hesaplama
+    float widthDifference = totalWidth - totalObstaclesWidth;
+    
+    // Her bir objenin ölçeğinde yapılması gereken değişiklik
+    float scaleAdjustment = widthDifference / numberOfObstacles;
+
+    float currentX = startX;
+
+    for (int i = 0; i < numberOfObstacles; i++)
     {
-        float totalWidth = endX - startX;
-        float spacingX = totalWidth / (numberOfObstacles - 1);
+        Vector3 spawnPosition = new Vector3(currentX, spawnY, 0f);
 
-        float currentX = startX;
+        GameObject obstacle = Instantiate(obstaclePrefab, spawnPosition, Quaternion.identity);
+        obstaclePositions.Add(spawnPosition);
+        spawnedObstacles.Add(obstacle);
 
-        for (int i = 0; i < numberOfObstacles; i++)
+        // Objelerin x eksenindeki ölçeğini ayarlama
+        Vector3 currentScale = obstacle.transform.localScale;
+        currentScale.x += scaleAdjustment;
+
+        // minimum olan değer döndürüyor maksimum genişliği ayarlamak için eklendi
+        currentScale.x = Mathf.Min(currentScale.x, currentScale.x);
+
+        obstacle.transform.localScale = currentScale;
+
+        // spawnedObstaclesPos listesine yeni bir Transform ekle
+        spawnedObstaclesPos.Add(obstacle.transform);
+
+        // Rigidbody2D componentini al ve yerçekimi değerini ayarla
+        Rigidbody2D rb = obstacle.GetComponent<Rigidbody2D>();
+        if (rb != null)  // Eğer objede Rigidbody2D componenti varsa
         {
-            Vector3 spawnPosition = new Vector3(currentX, spawnY, 0f);
-
-            GameObject obstacle = Instantiate(obstaclePrefab, spawnPosition, Quaternion.identity);
-            obstaclePositions.Add(spawnPosition);
-            spawnedObstacles.Add(obstacle);
-
-            // spawnedObstaclesPos listesine yeni bir Transform ekle
-            spawnedObstaclesPos.Add(obstacle.transform);
-
-            currentX += spacingX;
+            rb.gravityScale *= objectGravityMultiplier;
         }
+
+        currentX += spacingX;
     }
+}
+
+
+
 
     private void StartMoving()
     {
+        FireMovement.isFireAlive = false;
         StartCoroutine(MoveCharacterToFirstObstacle());
     }
 

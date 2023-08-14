@@ -508,10 +508,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 82ccadd25614b734ea4a3e21cf6e6ed8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  numberOfObstacles: 2
+  numberOfObstacles: 4
   spawnY: 4
-  startX: -4
-  endX: 4
+  startX: -6.5
+  endX: 6.5
   obstaclePositions: []
   platformYPos: -3.13
   maxObstacleYPos: -6.5
