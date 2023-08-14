@@ -22,6 +22,7 @@ public class GameManager : MonoBehaviour
 
     public GameObject obstaclePrefab;
     public GameObject character;
+    public GameObject gameOver;
 
     //LISTS//
     private List<GameObject> spawnedObstacles = new List<GameObject>();
@@ -51,6 +52,7 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
+        gameOver.SetActive(false);
         CalculateSpacingAndSpawnObstacles();
         currentEnergy = maxEnergy;
     }
@@ -159,9 +161,6 @@ public class GameManager : MonoBehaviour
     }
 }
 
-
-
-
     private void StartMoving()
     {
         FireMovement.isFireAlive = false;
@@ -187,7 +186,7 @@ public class GameManager : MonoBehaviour
             // Enerji bitip bitmediğini kontrol etme
             if (currentEnergy <= 0f)
             {
-                Debug.Log("Enerji bitti!");
+                gameOver.SetActive(true);
                 isLevelOver = true;
                 yield break; // Coroutine'i durdurma
             }
@@ -220,5 +219,8 @@ public class GameManager : MonoBehaviour
         characterTransform.GetComponent<SpriteRenderer>().sprite = sprite;
     }
 
-
+    public void GameOver()
+    {
+        Debug.Log("oyun bitti");
+    }
 }

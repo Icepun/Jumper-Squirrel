@@ -10,6 +10,8 @@ public class FireMovement : MonoBehaviour
     [SerializeField]
     private float speed = 1.0f;
 
+    public GameObject gameOver;
+
     private int currentWaypointIndex = 0;
 
     // Başka scriptlerden erişilebilir bir boolean değişkeni
@@ -51,7 +53,8 @@ public class FireMovement : MonoBehaviour
     // Bu fonksiyon, objenin başka bir objeye temas ettiğinde otomatik olarak çağrılır.
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        Debug.Log("hello collision");
+        gameOver.SetActive(true);
+        gameObject.SetActive(false);
         // Temas edilen objeyi yok eder.
         Destroy(collision.gameObject);
     }
