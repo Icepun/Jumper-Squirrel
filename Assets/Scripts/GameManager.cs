@@ -23,13 +23,13 @@ public class GameManager : MonoBehaviour
     public GameObject obstaclePrefab;
     public GameObject character;
     public GameObject gameOver;
+    public GameObject winLevel;
+    public GameObject lastPlatform;
 
     //LISTS//
     private List<GameObject> spawnedObstacles = new List<GameObject>();
     private List<Transform> spawnedObstaclesPos = new List<Transform>();
     private List<float> posDifferenceList = new List<float>();
-
-    private bool hasJumped = false;
 
     private int obstacleCount = 0;
     private bool isObstacleFalling = false;
@@ -53,13 +53,13 @@ public class GameManager : MonoBehaviour
     private void Start()
     {
         gameOver.SetActive(false);
+        winLevel.SetActive(false);
         CalculateSpacingAndSpawnObstacles();
         currentEnergy = maxEnergy;
     }
 
     private void Update()
     {
-        Debug.Log("obstacle pos:" + obstaclePositions[0]);
         GameObject fallingObstacle = spawnedObstacles[obstacleCount];
 
         energyProgress.fillAmount = currentEnergy / maxEnergy;
@@ -81,14 +81,12 @@ public class GameManager : MonoBehaviour
                         {
                             float firstYPos = Mathf.Abs(platformYPos + 4.105f - spawnedObstaclesPos[obstacleCount].position.y);
                             posDifferenceList.Add(firstYPos);
-                            Debug.Log("ilk pos eklendi : " + firstYPos);
                         }
 
                         else
                         {
                             float YPos = Mathf.Abs(spawnedObstaclesPos[obstacleCount - 1].position.y - spawnedObstaclesPos[obstacleCount].position.y);
                             posDifferenceList.Add(YPos);
-                            Debug.Log("pos eklendi : " + YPos);
                         }
 
                         fallingObstacle.GetComponent<Rigidbody2D>().isKinematic = true;
@@ -159,7 +157,11 @@ public class GameManager : MonoBehaviour
 
         currentX += spacingX;
     }
-}
+
+        // lastPlatform GameObject'inin transformunu listeye ekle
+        spawnedObstacles.Add(lastPlatform);
+        spawnedObstaclesPos.Add(lastPlatform.transform);
+    }
 
     private void StartMoving()
     {
@@ -170,6 +172,10 @@ public class GameManager : MonoBehaviour
     private IEnumerator MoveCharacterToFirstObstacle()
     {
         Rigidbody2D characterRigidbody = characterTransform.GetComponent<Rigidbody2D>();
+
+        // Son platform için enerji hesaplaması yap
+        float lastPlatformEnergy = 0;
+        posDifferenceList.Add(lastPlatformEnergy);
 
         for (int i = 0; i < spawnedObstacles.Count; i++)
         {
@@ -211,16 +217,11 @@ public class GameManager : MonoBehaviour
             yield return new WaitForSeconds(1f);
         }
 
-        hasJumped = true;
+        winLevel.SetActive(true);
     }
 
     private void SetCharacterSprite(Sprite sprite)
     {
         characterTransform.GetComponent<SpriteRenderer>().sprite = sprite;
-    }
-
-    public void GameOver()
-    {
-        Debug.Log("oyun bitti");
     }
 }
