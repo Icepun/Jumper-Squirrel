@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -15,6 +16,7 @@ public class GameManager : MonoBehaviour
     public float platformYPos;
     public float maxObstacleYPos;
     public float objectGravityMultiplier;
+    public float maxPrefabScale;
 
     [Header("---------- GAME OBJECTS ----------")]
 
@@ -75,7 +77,7 @@ public class GameManager : MonoBehaviour
                     {
                         if (obstacleCount == 0)
                         {
-                            float firstYPos = Mathf.Abs(platformYPos + 0.71f - spawnedObstaclesPos[obstacleCount].position.y);
+                            float firstYPos = Mathf.Abs(platformYPos + 4.105f - spawnedObstaclesPos[obstacleCount].position.y);
                             posDifferenceList.Add(firstYPos);
                             Debug.Log("ilk pos eklendi : " + firstYPos);
                         }
@@ -139,7 +141,7 @@ public class GameManager : MonoBehaviour
         currentScale.x += scaleAdjustment;
 
         // minimum olan değer döndürüyor maksimum genişliği ayarlamak için eklendi
-        currentScale.x = Mathf.Min(currentScale.x, currentScale.x);
+        currentScale.x = Mathf.Min(currentScale.x, maxPrefabScale);
 
         obstacle.transform.localScale = currentScale;
 
