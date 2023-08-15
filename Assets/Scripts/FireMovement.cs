@@ -11,6 +11,7 @@ public class FireMovement : MonoBehaviour
     private float speed = 1.0f;
 
     public GameObject gameOver;
+    public GameObject otherFire;
 
     private int currentWaypointIndex = 0;
 
@@ -53,9 +54,19 @@ public class FireMovement : MonoBehaviour
     // Bu fonksiyon, objenin başka bir objeye temas ettiğinde otomatik olarak çağrılır.
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        gameOver.SetActive(true);
-        gameObject.SetActive(false);
-        // Temas edilen objeyi yok eder.
-        Destroy(collision.gameObject);
+        if(!collision.gameObject.CompareTag("fire"))
+        {
+            if(otherFire != null)
+            {
+                otherFire.SetActive(false);
+            }
+
+            gameOver.SetActive(true);
+            gameObject.SetActive(false);
+
+            // Temas edilen objeyi yok eder.
+            Destroy(collision.gameObject);
+        }
     }
+
 }
