@@ -15,20 +15,27 @@ public class startScene : MonoBehaviour
     public Button vibrationsOnOff;
     public static int isVibrationOn;
 
+    public AudioSource music;
+
     private void Start()
     {
         settingsPanel.SetActive(false);
         isSoundOn = PlayerPrefs.GetInt("sound");
         isVibrationOn = PlayerPrefs.GetInt("vibration");
+    }
 
+    private void Update()
+    {
         if (isSoundOn == 0)
         {
             soundsOnOff.GetComponentInChildren<TextMeshProUGUI>().text = "Sounds : Off";
+            music.mute = true;
         }
 
         else if (isSoundOn == 1)
         {
             soundsOnOff.GetComponentInChildren<TextMeshProUGUI>().text = "Sounds : On";
+            music.mute = false;
         }
 
         if (isVibrationOn == 0)

@@ -1,8 +1,11 @@
 using JetBrains.Annotations;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using Voodoo.Utils;
 
 public class GameManager : MonoBehaviour
 {
@@ -25,6 +28,8 @@ public class GameManager : MonoBehaviour
     public GameObject gameOver;
     public GameObject winLevel;
     public GameObject lastPlatform;
+    public TextMeshProUGUI levelText;
+    public AudioSource music;
 
     //LISTS//
     private List<GameObject> spawnedObstacles = new List<GameObject>();
@@ -52,8 +57,19 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
+        if (startScene.isSoundOn == 0)
+        {
+            music.mute = true;
+        }
+
+        else if (startScene.isSoundOn == 1)
+        {
+            music.mute = false;
+        }
+
         gameOver.SetActive(false);
         winLevel.SetActive(false);
+        levelText.text = SceneManager.GetActiveScene().name;
         CalculateSpacingAndSpawnObstacles();
         currentEnergy = maxEnergy;
     }
@@ -66,6 +82,11 @@ public class GameManager : MonoBehaviour
 
         if (Input.GetMouseButtonDown(0))
         {
+            if (startScene.isVibrationOn == 1)
+            {
+                Vibrations.Haptic(HapticTypes.MediumImpact);
+            }
+
             if (!isLevelOver)
             {
                 if (!isObstacleFalling)
@@ -165,6 +186,11 @@ public class GameManager : MonoBehaviour
 
     private void StartMoving()
     {
+        if (startScene.isVibrationOn == 1)
+        {
+            Vibrations.Haptic(HapticTypes.Warning);
+        }
+
         FireMovement.isFireAlive = false;
         StartCoroutine(MoveCharacterToFirstObstacle());
     }
@@ -193,6 +219,12 @@ public class GameManager : MonoBehaviour
             if (currentEnergy <= 0f)
             {
                 gameOver.SetActive(true);
+
+                if (startScene.isVibrationOn == 1)
+                {
+                    Vibrations.Haptic(HapticTypes.Failure);
+                }
+
                 isLevelOver = true;
                 yield break; // Coroutine'i durdurma
             }
@@ -218,10 +250,24 @@ public class GameManager : MonoBehaviour
         }
 
         winLevel.SetActive(true);
+
+        if (startScene.isVibrationOn == 1)
+        {
+            Vibrations.Haptic(HapticTypes.Success);
+        }
+
+        string currentSceneName = SceneManager.GetActiveScene().name;
+        int currentLevel = int.Parse(currentSceneName.Replace("level", ""));
+        PlayerPrefs.SetInt("LastCompletedLevel", currentLevel);
     }
 
     private void SetCharacterSprite(Sprite sprite)
     {
         characterTransform.GetComponent<SpriteRenderer>().sprite = sprite;
+    }
+
+    public void CloseButton()
+    {
+        SceneManager.LoadScene(0);
     }
 }
